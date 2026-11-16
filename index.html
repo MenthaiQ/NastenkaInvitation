@@ -1,0 +1,426 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Свидание для Настеньки</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,500;0,700;1,500;1,700&family=Golos+Text:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #FDEFE9;
+  --card: #ffffff;
+  --ink: #2A1F2B;
+  --muted: #7d6671;
+  --berry: #D6336C;
+  --peach: #FFB38A;
+  --pine: #1F3D33;
+  --mint: #CFE9DB;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #1E1A22;
+    --card: #2A2330;
+    --ink: #F7EDEA;
+    --muted: #B9A7B2;
+    --berry: #FF7FA4;
+    --peach: #E9875A;
+    --pine: #9FD6B8;
+    --mint: #2F4A3E;
+    color-scheme: dark;
+  }
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; min-height: 100%; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: "Golos Text", system-ui, sans-serif;
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  overflow-x: hidden;
+}
+.screen {
+  display: none;
+  width: 100%;
+  max-width: 440px;
+  text-align: center;
+}
+.screen.active { display: block; animation: rise .6s cubic-bezier(.2,.7,.2,1); }
+@keyframes rise {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: none; }
+}
+h1 {
+  font-family: "Lora", Georgia, serif;
+  font-style: italic;
+  font-weight: 700;
+  font-size: clamp(1.9rem, 6vw, 2.5rem);
+  line-height: 1.2;
+  margin: 0.4em 0 0.3em;
+}
+p.lead { color: var(--muted); margin: 0 0 1.6em; line-height: 1.5; }
+.bear { width: 170px; height: 170px; animation: bob 3s ease-in-out infinite; }
+@keyframes bob { 50% { transform: translateY(-8px) rotate(-2deg); } }
+@media (prefers-reduced-motion: reduce) {
+  .bear, .screen.active { animation: none; }
+}
+
+.actions { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; align-items: center; margin-top: 8px; }
+.btn {
+  font: inherit;
+  font-weight: 800;
+  border: 0;
+  border-radius: 999px;
+  padding: 14px 30px;
+  cursor: pointer;
+  background: var(--berry);
+  color: #fff;
+  transition: transform .2s ease, opacity .4s ease, background .2s;
+  box-shadow: 0 8px 22px -10px var(--berry);
+}
+.btn:hover { transform: translateY(-2px); }
+.btn:focus-visible, .opt:focus-visible, input:focus-visible, select:focus-visible {
+  outline: 3px solid var(--peach);
+  outline-offset: 3px;
+}
+.btn.ghost {
+  background: transparent;
+  color: var(--muted);
+  border: 2px solid currentColor;
+  box-shadow: none;
+}
+.btn.yes { transform-origin: center; }
+#no { transform-origin: center; }
+#no.gone { opacity: 0; pointer-events: none; }
+.note { min-height: 1.5em; margin-top: 18px; color: var(--muted); font-size: .95rem; }
+
+.opts { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 8px; }
+.opts.single { grid-template-columns: 1fr; }
+.opt {
+  font: inherit;
+  color: var(--ink);
+  background: var(--card);
+  border: 2px solid transparent;
+  border-radius: 20px;
+  padding: 18px 12px;
+  cursor: pointer;
+  box-shadow: 0 10px 24px -18px rgba(42,31,43,.4);
+  transition: transform .2s ease, border-color .2s ease;
+}
+.opt:hover { transform: translateY(-3px); border-color: var(--peach); }
+.opt.picked { border-color: var(--berry); background: var(--mint); }
+.opt .e { display: block; font-size: 2rem; margin-bottom: 6px; }
+.opt .t { font-weight: 600; font-size: .98rem; }
+
+.field {
+  display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin: 10px 0 18px;
+}
+input[type="date"], input[type="time"] {
+  font: inherit;
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 2px solid var(--peach);
+  background: var(--card);
+  color: var(--ink);
+}
+.error { color: var(--berry); min-height: 1.4em; margin-bottom: 8px; font-size: .95rem; }
+
+.card {
+  background: var(--card);
+  border-radius: 24px;
+  padding: 22px 20px;
+  margin: 18px 0;
+  box-shadow: 0 16px 36px -22px rgba(42,31,43,.45);
+  text-align: left;
+}
+.card dl { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 10px 16px; }
+.card dt { color: var(--muted); font-size: .92rem; }
+.card dd { margin: 0; font-weight: 600; }
+.copy-text {
+  width: 100%;
+  font: inherit;
+  font-size: .9rem;
+  padding: 12px;
+  border-radius: 14px;
+  border: 2px solid var(--mint);
+  background: var(--bg);
+  color: var(--ink);
+  resize: none;
+  margin-top: 6px;
+}
+
+.burst {
+  position: fixed; left: 50%; top: 45%;
+  font-size: 1.8rem;
+  pointer-events: none;
+  animation: fly 1.5s ease-out forwards;
+  z-index: 10;
+}
+@keyframes fly {
+  to { transform: translate(var(--x), var(--y)) rotate(var(--r)) scale(.5); opacity: 0; }
+}
+</style>
+</head>
+<body>
+
+<main>
+
+  <!-- 1. Вопрос -->
+  <section class="screen active" id="s-ask" aria-live="polite">
+    <svg class="bear" viewBox="0 0 200 200" aria-hidden="true">
+      <circle cx="50" cy="55" r="22" fill="#8B5E3C"/>
+      <circle cx="150" cy="55" r="22" fill="#8B5E3C"/>
+      <circle cx="50" cy="55" r="11" fill="#E8B896"/>
+      <circle cx="150" cy="55" r="11" fill="#E8B896"/>
+      <circle cx="100" cy="110" r="70" fill="#A9774F"/>
+      <ellipse cx="100" cy="128" rx="28" ry="22" fill="#E8B896"/>
+      <circle cx="76" cy="100" r="7" fill="#2A1F2B"/>
+      <circle cx="124" cy="100" r="7" fill="#2A1F2B"/>
+      <ellipse cx="100" cy="118" rx="7" ry="5" fill="#2A1F2B"/>
+      <path d="M92 130 Q100 138 108 130" stroke="#2A1F2B" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <circle cx="62" cy="122" r="8" fill="#FF8FAE" opacity=".7"/>
+      <circle cx="138" cy="122" r="8" fill="#FF8FAE" opacity=".7"/>
+      <path d="M150 168 c-10-8-18-14-14-22 c3-6 10-5 14 1 c4-6 11-7 14-1 c4 8-4 14-14 22z" fill="#D6336C"/>
+    </svg>
+    <h1>Настенька, ты пойдёшь со мной на свидание?</h1>
+    <p class="lead">Выбирай честно 🙂</p>
+    <div class="actions">
+      <button class="btn yes" id="yes">Да 💕</button>
+      <button class="btn ghost" id="no">Нет, не пойду</button>
+    </div>
+    <div class="note" id="noNote"></div>
+  </section>
+
+  <!-- 1b. Проверка -->
+  <section class="screen" id="s-check">
+    <h1>Ты правда согласилась? 🥰</h1>
+    <p class="lead">Я был готов, что ты выберешь «нет» 😏</p>
+    <div class="actions">
+      <button class="btn" onclick="go('s-date')">да, правда))</button>
+    </div>
+  </section>
+
+  <!-- 2. Дата и время -->
+  <section class="screen" id="s-date">
+    <h1>Когда тебе удобно? 📅</h1>
+    <p class="lead">Выбери день и время, когда ты свободна 🗓️</p>
+    <div class="field">
+      <input type="date" id="date" aria-label="Дата">
+      <input type="time" id="time" value="19:00" aria-label="Время">
+    </div>
+    <div class="error" id="dateErr"></div>
+    <div class="actions">
+      <button class="btn" id="toPlace">Дальше</button>
+    </div>
+  </section>
+
+  <!-- 3. Место -->
+  <section class="screen" id="s-place">
+    <h1>Где встретимся? 📍</h1>
+    <p class="lead">Выбирай любое, что нравится 😊</p>
+    <div class="opts">
+      <button class="opt" data-step="place" data-value="Ресторан"><span class="e">🍽️</span><span class="t">Ресторан</span></button>
+      <button class="opt" data-step="place" data-value="Домашняя посиделка"><span class="e">🛋️</span><span class="t">Домашняя посиделка</span></button>
+      <button class="opt" data-step="place" data-value="Прогулка за город"><span class="e">🌲</span><span class="t">Прогулка за город</span></button>
+      <button class="opt" data-step="place" data-value="Тир"><span class="e">🎯</span><span class="t">Тир</span></button>
+      <button class="opt" data-step="place" data-value="Кино"><span class="e">🎬</span><span class="t">Кино</span></button>
+    </div>
+  </section>
+
+  <!-- 4. Еда -->
+  <section class="screen" id="s-food">
+    <h1>Что будем есть? 🍴</h1>
+    <p class="lead">Ты же любишь вкусно покушать 😋</p>
+    <div class="opts">
+      <button class="opt" data-step="food" data-value="Паста"><span class="e">🍝</span><span class="t">Паста</span></button>
+      <button class="opt" data-step="food" data-value="Лазанья"><span class="e">🧀</span><span class="t">Лазанья</span></button>
+      <button class="opt" data-step="food" data-value="Азиатская кухня"><span class="e">🥢</span><span class="t">Азиатская кухня</span></button>
+      <button class="opt" data-step="food" data-value="Что-нибудь новенькое"><span class="e">🎁</span><span class="t">Что-нибудь новенькое</span></button>
+    </div>
+  </section>
+
+  <!-- 5. Напиток -->
+  <section class="screen" id="s-drink">
+    <h1>Что выпьем? 🥂</h1>
+    <p class="lead">Последний вопрос 😉</p>
+    <div class="opts">
+      <button class="opt" data-step="drink" data-value="Коктейль"><span class="e">🍹</span><span class="t">Коктейль</span></button>
+      <button class="opt" data-step="drink" data-value="Пиво"><span class="e">🍺</span><span class="t">Пиво</span></button>
+      <button class="opt" data-step="drink" data-value="Вино"><span class="e">🍷</span><span class="t">Вино</span></button>
+      <button class="opt" data-step="drink" data-value="Чай"><span class="e">🍵</span><span class="t">Чай</span></button>
+      <button class="opt" data-step="drink" data-value="Кофе"><span class="e">☕</span><span class="t">Кофе</span></button>
+    </div>
+  </section>
+
+  <!-- 6. Итог -->
+  <section class="screen" id="s-final">
+    <h1>Записано! 💞</h1>
+    <p class="lead">Свидание почти готово ✨</p>
+    <div class="card">
+      <dl>
+        <dt>Когда</dt><dd id="sumWhen"></dd>
+        <dt>Где</dt><dd id="sumPlace"></dd>
+        <dt>Еда</dt><dd id="sumFood"></dd>
+        <dt>Напиток</dt><dd id="sumDrink"></dd>
+      </dl>
+    </div>
+    <textarea class="copy-text" id="msg" rows="4" readonly aria-label="Текст для отправки"></textarea>
+    <div class="actions">
+      <button class="btn" id="copy">Скопировать текст</button>
+      <a class="btn ghost" id="tg" href="https://t.me/MenthaiQ" target="_blank" rel="noopener">Отправить мне в Telegram</a>
+    </div>
+    <div class="note" id="copyNote"></div>
+  </section>
+
+</main>
+
+<script>
+const state = { date: '', time: '', place: '', food: '', drink: '' };
+const $ = (id) => document.getElementById(id);
+const screens = [...document.querySelectorAll('.screen')];
+
+function go(id) {
+  screens.forEach(s => s.classList.toggle('active', s.id === id));
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+/* Разлетающиеся сердечки и поцелуи */
+function burst() {
+  const items = ['❤️', '💋', '💕', '😘', '💗', '💋', '❤️', '💖'];
+  for (let i = 0; i < 36; i++) {
+    const el = document.createElement('span');
+    el.className = 'burst';
+    el.textContent = items[i % items.length];
+    const angle = (Math.PI * 2 * i) / 36 + Math.random() * 0.4;
+    const dist = 140 + Math.random() * 160;
+    el.style.setProperty('--x', Math.cos(angle) * dist + 'px');
+    el.style.setProperty('--y', Math.sin(angle) * dist + 'px');
+    el.style.setProperty('--r', (Math.random() * 120 - 60) + 'deg');
+    el.style.animationDelay = (Math.random() * 0.15) + 's';
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 1800);
+  }
+}
+
+/* Кнопка «Нет» убегает */
+const noPhrases = [
+  'Нет, не пойду',
+  'Точно нет?',
+  'Подумай ещё 🥺',
+  'Ну пожалуйста!',
+  'Ты уверена? 💔',
+  'Совсем-совсем нет?',
+  'Ладно, последний шанс…',
+  'Ааа, она убегает!'
+];
+let noClicks = 0;
+const yesBtn = $('yes');
+const noBtn = $('no');
+
+noBtn.addEventListener('click', () => {
+  noClicks++;
+  noBtn.textContent = noPhrases[Math.min(noClicks, noPhrases.length - 1)];
+  noBtn.style.transform = `scale(${Math.max(0.2, 1 - noClicks * 0.12)})`;
+  yesBtn.style.transform = `scale(${Math.min(1.8, 1 + noClicks * 0.1)})`;
+  if (noClicks >= 8) {
+    noBtn.classList.add('gone');
+    setTimeout(() => { noBtn.style.display = 'none'; }, 400);
+    $('noNote').textContent = 'Кнопка «Нет» сбежала 🏃‍♀️ Значит, остаётся только «Да».';
+  }
+});
+
+yesBtn.addEventListener('click', () => {
+  burst();
+  setTimeout(() => {
+    const today = new Date();
+    const min = new Date(today.getTime() - today.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
+    $('date').min = min;
+    go('s-check');
+  }, 1300);
+});
+
+/* Дата и время */
+$('toPlace').addEventListener('click', () => {
+  const d = $('date').value;
+  const t = $('time').value;
+  if (!d || !t) {
+    $('dateErr').textContent = 'Выбери дату и время, пожалуйста.';
+    return;
+  }
+  $('dateErr').textContent = '';
+  state.date = d;
+  state.time = t;
+  go('s-place');
+});
+
+/* Выбор в карточках */
+const nextStep = { place: 's-food', food: 's-drink', drink: 's-final' };
+
+document.querySelectorAll('.opt').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const step = btn.dataset.step;
+    state[step] = btn.dataset.value;
+    const siblings = btn.parentElement.querySelectorAll('.opt');
+    siblings.forEach(b => b.classList.remove('picked'));
+    btn.classList.add('picked');
+    setTimeout(() => {
+      if (step === 'drink') showFinal();
+      else go(nextStep[step]);
+    }, 260);
+  });
+});
+
+/* Итог */
+function formatDate(iso) {
+  const [y, m, d] = iso.split('-').map(Number);
+  return new Date(y, m - 1, d).toLocaleDateString('ru-RU', { weekday: 'long', day: 'numeric', month: 'long' });
+}
+
+// Адрес Google Apps Script для записи ответов (см. инструкцию). Пока пусто — запись отключена.
+const RECORD_URL = 'PASTE_APPS_SCRIPT_URL_HERE';
+
+function record() {
+  if (!RECORD_URL.startsWith('https://')) return;
+  fetch(RECORD_URL, {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: { 'Content-Type': 'text/plain' },
+    body: JSON.stringify({ ...state, answeredAt: new Date().toISOString() })
+  }).catch(() => {});
+}
+
+function showFinal() {
+  const when = `${formatDate(state.date)}, ${state.time}`;
+  $('sumWhen').textContent = when;
+  $('sumPlace').textContent = state.place;
+  $('sumFood').textContent = state.food;
+  $('sumDrink').textContent = state.drink;
+  $('msg').value =
+    `Настенька, да! 💕 Свидание: ${when}. Место: ${state.place.toLowerCase()}. ` +
+    `Ужин: ${state.food.toLowerCase()}. Напиток: ${state.drink.toLowerCase()}. Жду с нетерпением!`;
+  record();
+  go('s-final');
+}
+
+$('copy').addEventListener('click', async () => {
+  const text = $('msg').value;
+  try {
+    await navigator.clipboard.writeText(text);
+    $('copyNote').textContent = 'Скопировано ✓';
+  } catch {
+    $('msg').select();
+    $('copyNote').textContent = 'Текст выделен, скопируй его вручную.';
+  }
+});
+document.getElementById('tg').addEventListener('click', () => {
+  navigator.clipboard?.writeText($('msg').value).catch(() => {});
+  $('copyNote').textContent = 'Текст скопирован. Вставьте его в чат и отправьте.';
+});
+</script>
+</body>
+</html>
